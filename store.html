@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="Saqi Corporation — Official Online Store">
 <title>Store — Saqi Corporation</title>
 <style>
 :root{--b:#08090b;--g:#c8a45a;--g2:#f1d58c;--c:#f5f1e8;--m:#aaa69d}
@@ -41,46 +40,8 @@ footer{padding:50px 0 20px;border-top:1px solid #fff2;background:#050607}.foot{d
 </section>
 
 <main class="wrap">
-  <div class="grid">
-    <div class="card">
-      <div class="pic">❄️</div>
-      <div class="info">
-        <span class="tag">CLIMATE</span>
-        <h3>Inverter AC</h3>
-        <div class="price">Rs. 145,000</div>
-        <a class="buy-btn" href="https://wa.me/923000000000?text=I%20want%20to%20order%20Inverter%20AC">Order via WhatsApp</a>
-      </div>
-    </div>
-    
-    <div class="card">
-      <div class="pic">🧊</div>
-      <div class="info">
-        <span class="tag">REFRIGERATION</span>
-        <h3>Smart Refrigerator</h3>
-        <div class="price">Rs. 185,000</div>
-        <a class="buy-btn" href="https://wa.me/923000000000?text=I%20want%20to%20order%20Smart%20Refrigerator">Order via WhatsApp</a>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="pic">🍳</div>
-      <div class="info">
-        <span class="tag">KITCHEN</span>
-        <h3>Cooking Range</h3>
-        <div class="price">Rs. 65,000</div>
-        <a class="buy-btn" href="https://wa.me/923000000000?text=I%20want%20to%20order%20Cooking%20Range">Order via WhatsApp</a>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="pic">🌀</div>
-      <div class="info">
-        <span class="tag">COMFORT</span>
-        <h3>Deluxe Ceiling Fan</h3>
-        <div class="price">Rs. 12,500</div>
-        <a class="buy-btn" href="https://wa.me/923000000000?text=I%20want%20to%20order%20Deluxe%20Ceiling%20Fan">Order via WhatsApp</a>
-      </div>
-    </div>
+  <div class="grid" id="storeCatalog">
+    <p style="text-align:center;width:100%">Loading inventory...</p>
   </div>
 </main>
 
@@ -109,5 +70,46 @@ footer{padding:50px 0 20px;border-top:1px solid #fff2;background:#050607}.foot{d
   </div>
 </footer>
 
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAwGftK5W4HX7RctZP",
+    authDomain: "saqi-corporation-6c0.firebaseapp.com",
+    projectId: "saqi-corporation-6c0",
+    storageBucket: "saqi-corporation-6c0.appspot.com",
+    messagingSenderId: "37838512325",
+    appId: "1:37838512325:web:saqicorporation"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  onSnapshot(collection(db, "products"), (snapshot) => {
+    const catalog = document.getElementById('storeCatalog');
+    catalog.innerHTML = '';
+    
+    if (snapshot.empty) {
+      catalog.innerHTML = '<p style="text-align:center;width:100%">No products available right now.</p>';
+      return;
+    }
+
+    snapshot.forEach((docSnap) => {
+      const p = docSnap.data();
+      catalog.innerHTML += `
+        <div class="card">
+          <div class="pic">${p.icon}</div>
+          <div class="info">
+            <span class="tag">${p.tag}</span>
+            <h3>${p.name}</h3>
+            <div class="price">${p.price}</div>
+            <a class="buy-btn" href="https://wa.me/923000000000?text=I%20want%20to%20order%20${encodeURIComponent(p.name)}">Order via WhatsApp</a>
+          </div>
+        </div>
+      `;
+    });
+  });
+</script>
 </body>
 </html>
